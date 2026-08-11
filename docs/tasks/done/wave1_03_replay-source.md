@@ -1,7 +1,7 @@
 # W1-03 · ReplayFrameSource
 
 **Wave:** 1 — Foundations & Harness
-**Status:** open
+**Status:** done
 **Depends on:** W1-02
 **Spec:** §5, §15
 
