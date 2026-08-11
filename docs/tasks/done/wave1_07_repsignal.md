@@ -1,7 +1,7 @@
 # W1-07 · RepSignal type
 
 **Wave:** 1 — Foundations & Harness
-**Status:** open
+**Status:** done
 **Depends on:** W1-01
 **Spec:** §6
 
