@@ -1,7 +1,7 @@
 # W1-01 · Xcode project skeleton
 
 **Wave:** 1 — Foundations & Harness
-**Status:** open
+**Status:** done
 **Depends on:** —
 **Spec:** §4.3, §4.4
 

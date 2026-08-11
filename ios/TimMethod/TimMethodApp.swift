@@ -1,4 +1,5 @@
 import SwiftUI
+import TimMethodCore
 
 @main
 struct TimMethodApp: App {
@@ -11,6 +12,6 @@ struct TimMethodApp: App {
 
 struct ContentView: View {
     var body: some View {
-        Text("Tim Method")
+        Text("Tim Method \(TimMethodCore.version)")
     }
 }
