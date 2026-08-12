@@ -1,7 +1,7 @@
 # W3-02 · Zero-crossing counter
 
 **Wave:** 3 — Rep Counter
-**Status:** open
+**Status:** done
 **Depends on:** W3-01
 **Spec:** §7.2
 
