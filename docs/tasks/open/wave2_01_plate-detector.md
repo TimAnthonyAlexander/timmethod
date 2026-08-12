@@ -19,9 +19,13 @@ This is the primary signal for every loaded exercise. Three independent shipped 
 - [ ] Handle two plates in frame (both ends of a dumbbell, or a second lifter) by scoring and picking one, deterministically
 
 ## Done when
-- [ ] Detects the plate on ≥95% of frames across a 20-clip FLEX barbell subset
-- [ ] Runs in ≤5 ms per frame on the dev device
 - [ ] Unit tests on synthetic ellipses at known angles recover the major axis to within 1%
+- [ ] Deterministic pick when two plates are in frame, proven by test
+- [ ] Runs in ≤5 ms per frame measured on the Mac as a stand-in; the on-device
+      number is confirmed in W6-08 against the thermal ladder
+- [ ] **Deferred to W2-06:** ≥95% detection rate on real barbell clips. That
+      needs the self-recorded set from W1-06, which does not exist yet. Do not
+      claim a real-footage detection rate before then.
 
 ## Notes
 Chrome plates under gym fluorescents may defeat gradient-based fitting — this is open question 3. If it fails, note exactly how before reaching for a fallback; a coloured band on the plate is marker friction the whole design rejects.

@@ -1,7 +1,7 @@
 # W2-05 · Plate and equipment configuration
 
 **Wave:** 2 — Track A: Plate Tracking
-**Status:** open
+**Status:** done
 **Depends on:** W1-01
 **Spec:** §8
 
