@@ -1,7 +1,7 @@
 # W2-03 · Frame-to-frame plate tracking
 
 **Wave:** 2 — Track A: Plate Tracking
-**Status:** open
+**Status:** done
 **Depends on:** W2-01
 **Spec:** §8
 
