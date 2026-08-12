@@ -1,7 +1,7 @@
 # W3-04 · Ratcheting calibration
 
 **Wave:** 3 — Rep Counter
-**Status:** open
+**Status:** done
 **Depends on:** W3-03
 **Spec:** §7.3
 
