@@ -19,6 +19,7 @@ xcuserdata/
 
 # Evaluation harness output
 core/out/
+out/
 
 # Fixture videos: large, and some source datasets are licence-restricted
 # (see fixtures/README.md). Sidecar JSON and the README stay tracked — they

@@ -1,7 +1,7 @@
 # W1-05 · Evaluation CLI
 
 **Wave:** 1 — Foundations & Harness
-**Status:** open
+**Status:** done
 **Depends on:** W1-03, W1-04
 **Spec:** §15, §15.2
 
