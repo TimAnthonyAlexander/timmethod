@@ -1,7 +1,7 @@
 # W3-05 · Posture gate
 
 **Wave:** 3 — Rep Counter
-**Status:** open
+**Status:** done
 **Depends on:** W1-07
 **Spec:** §7.1
 
