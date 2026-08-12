@@ -1,0 +1,19 @@
+{
+  "exerciseId": "bench_press",
+  "equipment": "barbell",
+  "plateDiameterMm": 450,
+  "trueRepCount": 3,
+  "truePartialCount": 0,
+  "cameraPosition": "oblique45",
+  "lightingNote": "indoor gym, mixed lighting, text overlay in frame",
+  "sourceDataset": "Countix",
+  "licence": "unverifiedCommercialUse",
+  "perRepTimestamps": null,
+  "referenceMeanConcentricVelocity": null,
+  "trueSetBoundaries": [
+    {
+      "startTime": 0.0,
+      "endTime": 7.674
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "exerciseId": "arm_exercise",
+  "equipment": "bodyweight",
+  "plateDiameterMm": null,
+  "trueRepCount": 3,
+  "truePartialCount": 0,
+  "cameraPosition": "frontal90",
+  "lightingNote": "outdoor sports field, bright lighting; no external weight visible in frame",
+  "sourceDataset": "Countix",
+  "licence": "unverifiedCommercialUse",
+  "perRepTimestamps": null,
+  "referenceMeanConcentricVelocity": null,
+  "trueSetBoundaries": [
+    {
+      "startTime": 4.667,
+      "endTime": 10.0
+    }
+  ]
+}

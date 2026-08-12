@@ -1,0 +1,19 @@
+{
+  "exerciseId": "push_up",
+  "equipment": "bodyweight",
+  "plateDiameterMm": null,
+  "trueRepCount": 6,
+  "truePartialCount": 0,
+  "cameraPosition": "oblique45",
+  "lightingNote": "indoor, dim lighting, carpeted room",
+  "sourceDataset": "Countix",
+  "licence": "unverifiedCommercialUse",
+  "perRepTimestamps": null,
+  "referenceMeanConcentricVelocity": null,
+  "trueSetBoundaries": [
+    {
+      "startTime": 0.0,
+      "endTime": 10.0
+    }
+  ]
+}

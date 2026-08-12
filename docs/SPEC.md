@@ -977,30 +977,45 @@ original primary and secondary sources. Both are gated behind an approval form
 and both are non-commercial, so both were always going to be torn out before any
 release (open question 9). They are dropped now instead of later.
 
-| Source | Content | Licence | Use |
+What was actually obtained, measured on 2026-08-12 rather than taken from each
+project's own description:
+
+| Source | Outcome | Licence | Use |
 |---|---|---|---|
-| **Your clips** | 10 v1 exercises × 3 camera angles × fresh/fatigued, one working set each | Yours outright | **Primary.** The loaded barbell set |
-| **MM-Fit** | 10 exercises, 5 dumbbell; multimodal with 2D/3D pose and rep labels ⟨C2⟩ | Open download, no form | Dumbbell coverage |
-| **InfiniteRep** | 1,000 synthetic videos, 10 bodyweight exercises, varied avatars and lighting ⟨A23⟩ | CC BY 4.0, commercially clean | Bodyweight track, lighting sweeps |
-| **RepCount-A** | 1,041 videos, 19,280 rep annotations ⟨A23⟩ | No explicit licence found — verify before any commercial use | Counting stress-test only |
-| **QUVA Repetition** | 100 videos, per-repetition annotations, mostly non-gym | Research use | Counting stress-test only |
+| **Countix** | **182 clips resolved of 370 attempted.** Per-clip rep counts plus repetition start/end. Barbell 87, bodyweight 90, dumbbell 5 | Annotations CC-BY (Google); the underlying YouTube footage is third-party, so treated as non-commercial | **Primary.** The whole working corpus |
+| **RepCount-A** | **0 clips.** Download is an interactive OneDrive/Baidu folder with no scriptable URL, and the package is metadata-only — the videos would still need the same YouTube attrition | Unverified | Blocked |
+| **MM-Fit** | **0 clips.** The 1.7 GB distribution contains IMU arrays, pose keypoints and rep labels, but **no video at all** | Open | Unusable for a camera app |
+| **InfiniteRep** | **0 clips.** Original source gone; the surviving mirror ships segmentation masks with no RGB, 160 of 720 archives corrupt, and **no rep-count column**. Licence is `infiniterep-research-use`, **not CC BY 4.0** as widely repeated | Non-commercial | Unusable, and not commercially clean |
+| **QUVA Repetition** | Downloaded; mostly non-gym (chopping, brushing hair) | Research use | Counting stress-test only |
 
-Self-recording is not a downgrade here. FLEX's advantage was 38 subjects across
-5 angles; its disadvantage was that none of them is the user, in their gym,
-under their lighting, with their rack. For a single-user app, one subject filmed
-across the angles that matter beats 38 filmed elsewhere. Roughly one session of
-filming plus one of labelling covers the loaded track.
+Three of the four secondary sources were unusable, and each failed for a
+different reason than its documentation implied. That is the normal state of
+dataset links a few years after publication, and it is why the corpus rests on
+the one source that resolved.
 
-Ground truth without hardware. Rep boundaries are labelled with a keyboard
-toggle against a frame-stepped video — published annotation studies put full
-boundary labelling at 1–5× real time by keyboard versus 7–18× with a
-bounding-box tool. Use `requestVideoFrameCallback`'s `mediaTime`, never
-`currentTime`, which is not frame-snapped and drifts up to a full frame period.
-Reference velocity comes from filming a subset at 240 fps and hand-digitising
-the two concentric endpoints: at ±5 mm of endpoint precision against a 450 mm
-plate over a typical 0.5 m / 0.6 s concentric, that is about ±0.01 m/s, five
-times tighter than the ≤ 0.05 m/s target in §15.2, and it needs no linear
-position transducer.
+Countix is Kinetics-derived, so it is a list of YouTube ids and attrition is
+inherent: 65 of the 188 failures were YouTube bot-detection under download
+concurrency rather than genuinely dead videos, and the rest were deleted,
+private or region-blocked.
+
+Ground truth comes from each source's own annotations; nothing is hand-labelled,
+because re-labelling what a dataset already labelled only adds a second error
+source. Countix supplies the count and the set boundaries directly.
+
+**This corpus scores counting and cannot score velocity.** Plate diameter is
+unknowable on found footage, so it is assumed at 450 mm — right for Olympic and
+bumper plates, and therefore right for most gym footage. That assumption is safe
+for the count, because the ratchet (§7.3) establishes range from the lifter's
+own first three reps and a wrong scale cancels out of the comparison entirely.
+It is unsafe for velocity, which it scales linearly. So §15.2's ≤ 0.05 m/s
+target cannot be scored here at all: it needs a clip with a criterion
+measurement, and no found footage carries one.
+
+The adversarial cases §15.1 asks for are also absent — a baggy hoodie, a rack
+upright crossing the bar, and a set taken to genuine failure so ROM visibly
+collapses. That last one is the only real test of the §7.3 ratchet, which has no
+prior art anywhere (open question 6). A good MAE on this corpus does not cover
+any of them.
 
 The clips only you can provide, when you get to it: baggy hoodie (no runtime fix
 for clothing exists in the literature ⟨A24⟩), your actual gym lighting, your rack

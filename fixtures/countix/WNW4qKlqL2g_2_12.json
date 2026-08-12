@@ -1,0 +1,19 @@
+{
+  "exerciseId": "back_squat",
+  "equipment": "barbell",
+  "plateDiameterMm": 450,
+  "trueRepCount": 3,
+  "truePartialCount": 0,
+  "cameraPosition": "oblique45",
+  "lightingNote": "indoor, dim lighting, backlit window",
+  "sourceDataset": "Countix",
+  "licence": "unverifiedCommercialUse",
+  "perRepTimestamps": null,
+  "referenceMeanConcentricVelocity": null,
+  "trueSetBoundaries": [
+    {
+      "startTime": 5.7,
+      "endTime": 10.0
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "exerciseId": "pull_up",
+  "equipment": "bodyweight",
+  "plateDiameterMm": null,
+  "trueRepCount": 8,
+  "truePartialCount": 0,
+  "cameraPosition": "frontal90",
+  "lightingNote": "outdoor, bright lighting, near water/pool",
+  "sourceDataset": "Countix",
+  "licence": "unverifiedCommercialUse",
+  "perRepTimestamps": null,
+  "referenceMeanConcentricVelocity": null,
+  "trueSetBoundaries": [
+    {
+      "startTime": 1.038,
+      "endTime": 9.97
+    }
+  ]
+}

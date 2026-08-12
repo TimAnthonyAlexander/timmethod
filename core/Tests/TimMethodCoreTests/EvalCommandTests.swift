@@ -86,6 +86,27 @@ struct EvalCommandEndToEndTests {
             .appendingPathComponent("fixtures")
     }
 
+    /// A temp directory holding copies of ONLY the three hand-made example
+    /// fixtures.
+    ///
+    /// These tests assert exact clip counts, so they must not see whatever
+    /// real corpus happens to be sitting under `fixtures/<source>/` — that
+    /// couples a unit test to a download. It is also a runtime matter: the
+    /// loader recurses now, and running the real Track A pipeline over 180+
+    /// real clips turned this suite from 1 second into 26.
+    private func makeExampleFixturesDirectory() throws -> URL {
+        let directory = try makeTempDirectory()
+        for name in ["barbell_back_squat", "dumbbell_row", "bodyweight_pushup"] {
+            for ext in ["mov", "json"] {
+                try FileManager.default.copyItem(
+                    at: Self.repoFixturesDirectory.appendingPathComponent("\(name).\(ext)"),
+                    to: directory.appendingPathComponent("\(name).\(ext)")
+                )
+            }
+        }
+        return directory
+    }
+
     private func makeTempDirectory() throws -> URL {
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent("eval-command-tests-\(UUID().uuidString)")
@@ -100,9 +121,11 @@ struct EvalCommandEndToEndTests {
         let outDirectory = try makeTempDirectory()
         defer { try? FileManager.default.removeItem(at: outDirectory) }
         let reportURL = outDirectory.appendingPathComponent("report.json")
+        let exampleFixtures = try makeExampleFixturesDirectory()
+        defer { try? FileManager.default.removeItem(at: exampleFixtures) }
 
         let command = try EvalCommand.parse([
-            "--fixtures", Self.repoFixturesDirectory.path,
+            "--fixtures", exampleFixtures.path,
             "--report", reportURL.path,
         ])
 
@@ -148,9 +171,11 @@ struct EvalCommandEndToEndTests {
         let outDirectory = try makeTempDirectory()
         defer { try? FileManager.default.removeItem(at: outDirectory) }
         let reportURL = outDirectory.appendingPathComponent("report.json")
+        let exampleFixtures = try makeExampleFixturesDirectory()
+        defer { try? FileManager.default.removeItem(at: exampleFixtures) }
 
         let command = try EvalCommand.parse([
-            "--fixtures", Self.repoFixturesDirectory.path,
+            "--fixtures", exampleFixtures.path,
             "--report", reportURL.path,
             "--filter", "pushup",
         ])
@@ -180,9 +205,11 @@ struct EvalCommandEndToEndTests {
         let outDirectory = try makeTempDirectory()
         defer { try? FileManager.default.removeItem(at: outDirectory) }
         let reportURL = outDirectory.appendingPathComponent("report.json")
+        let exampleFixtures = try makeExampleFixturesDirectory()
+        defer { try? FileManager.default.removeItem(at: exampleFixtures) }
 
         let command = try EvalCommand.parse([
-            "--fixtures", Self.repoFixturesDirectory.path,
+            "--fixtures", exampleFixtures.path,
             "--report", reportURL.path,
             "--filter", "squat",
         ])
@@ -208,6 +235,8 @@ struct EvalCommandEndToEndTests {
         let outDirectory = try makeTempDirectory()
         defer { try? FileManager.default.removeItem(at: outDirectory) }
         let reportURL = outDirectory.appendingPathComponent("report.json")
+        let exampleFixtures = try makeExampleFixturesDirectory()
+        defer { try? FileManager.default.removeItem(at: exampleFixtures) }
 
         let command = try EvalCommand.parse([
             "--fixtures", outDirectory.appendingPathComponent("does-not-exist").path,

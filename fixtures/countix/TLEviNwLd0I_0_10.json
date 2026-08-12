@@ -1,0 +1,19 @@
+{
+  "exerciseId": "arm_exercise",
+  "equipment": "bodyweight",
+  "plateDiameterMm": null,
+  "trueRepCount": 3,
+  "truePartialCount": 0,
+  "cameraPosition": "oblique45",
+  "lightingNote": "indoor gym, bright lighting; medicine ball, not a dumbbell",
+  "sourceDataset": "Countix",
+  "licence": "unverifiedCommercialUse",
+  "perRepTimestamps": null,
+  "referenceMeanConcentricVelocity": null,
+  "trueSetBoundaries": [
+    {
+      "startTime": 0.067,
+      "endTime": 8.833
+    }
+  ]
+}

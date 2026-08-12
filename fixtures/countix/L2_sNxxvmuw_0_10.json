@@ -1,0 +1,19 @@
+{
+  "exerciseId": "pull_up",
+  "equipment": "bodyweight",
+  "plateDiameterMm": null,
+  "trueRepCount": 10,
+  "truePartialCount": 0,
+  "cameraPosition": "oblique30",
+  "lightingNote": "indoor gym, dim lighting, text overlay in frame",
+  "sourceDataset": "Countix",
+  "licence": "unverifiedCommercialUse",
+  "perRepTimestamps": null,
+  "referenceMeanConcentricVelocity": null,
+  "trueSetBoundaries": [
+    {
+      "startTime": 0.0,
+      "endTime": 9.977
+    }
+  ]
+}

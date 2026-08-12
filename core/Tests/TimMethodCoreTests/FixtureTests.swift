@@ -44,24 +44,35 @@ struct FixtureTests {
     func exampleFixturesLoadAndValidate() throws {
         let result = try FixtureLoader.load(directory: Self.repoFixturesDirectory)
 
+        // Every fixture in the repo must validate, examples and real corpus
+        // alike — that assertion is worth keeping as the corpus grows.
         #expect(result.issues.isEmpty)
-        #expect(result.fixtures.count == 3)
 
-        let byId = Dictionary(uniqueKeysWithValues: result.fixtures.map { ($0.fixture.exerciseId, $0) })
+        // Look the three examples up by FILENAME, not by exercise id. The
+        // corpus under fixtures/<source>/ contains many clips sharing an id
+        // (dozens of back_squat), so an id is not a key and a fixed total is
+        // not a fact. Asserting either couples this test to whatever footage
+        // happens to be downloaded.
+        func example(_ name: String) throws -> LoadedFixture {
+            try #require(
+                result.fixtures.first { $0.videoURL.deletingPathExtension().lastPathComponent == name },
+                "missing example fixture \(name)"
+            )
+        }
 
-        let squat = try #require(byId["back_squat"])
+        let squat = try example("barbell_back_squat")
         #expect(squat.fixture.equipment == .barbell)
         #expect(squat.fixture.plateDiameterMm == 450)
         #expect(squat.fixture.cameraPosition == .perpendicular)
         #expect(squat.fixture.licence == .ownFootage)
         #expect(squat.fixture.trueSetBoundaries?.count == 1)
 
-        let row = try #require(byId["dumbbell_row"])
+        let row = try example("dumbbell_row")
         #expect(row.fixture.equipment == .dumbbell)
         #expect(row.fixture.plateDiameterMm == nil)
         #expect(row.fixture.referenceMeanConcentricVelocity?.count == row.fixture.trueRepCount)
 
-        let pushup = try #require(byId["pushup"])
+        let pushup = try example("bodyweight_pushup")
         #expect(pushup.fixture.equipment == .bodyweight)
         #expect(pushup.fixture.plateDiameterMm == nil)
         #expect(pushup.fixture.cameraPosition.isWithinRecommendedEnvelope == false)

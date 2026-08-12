@@ -171,39 +171,45 @@ public enum FixtureLoader {
             throw FixtureLoaderError.directoryNotFound(directory)
         }
 
-        let contents: [URL]
-        do {
-            contents = try fileManager.contentsOfDirectory(
+        // Recursive. A corpus is organised as `fixtures/<source>/<clip>` so that
+        // results stay attributable per source, and a flat walk would silently
+        // find only whatever happens to sit loose at the top level — reporting
+        // three example clips as if they were the whole set.
+        guard
+            let enumerator = fileManager.enumerator(
                 at: directory,
                 includingPropertiesForKeys: nil,
-                options: [.skipsHiddenFiles]
+                options: [.skipsHiddenFiles, .skipsPackageDescendants]
             )
-        } catch {
-            throw FixtureLoaderError.directoryUnreadable(url: directory, underlying: String(describing: error))
+        else {
+            throw FixtureLoaderError.directoryUnreadable(url: directory, underlying: "directory could not be enumerated")
         }
+        let contents = enumerator.compactMap { $0 as? URL }
 
-        let jsonBaseNames = Set(
+        // Pair on the full path without its extension, not on the last path
+        // component: two sources may legitimately hold a clip of the same name.
+        let jsonStems = Set(
             contents.filter { $0.pathExtension.lowercased() == "json" }
-                .map { $0.deletingPathExtension().lastPathComponent }
+                .map { $0.deletingPathExtension() }
         )
-        let movBaseNames = Set(
+        let movStems = Set(
             contents.filter { $0.pathExtension.lowercased() == "mov" }
-                .map { $0.deletingPathExtension().lastPathComponent }
+                .map { $0.deletingPathExtension() }
         )
-        let allBaseNames = jsonBaseNames.union(movBaseNames).sorted()
+        let allStems = jsonStems.union(movStems).sorted { $0.path < $1.path }
 
         var fixtures: [LoadedFixture] = []
         var issues: [FixtureLoadError] = []
 
-        for baseName in allBaseNames {
-            let sidecarURL = directory.appendingPathComponent(baseName).appendingPathExtension("json")
-            let videoURL = directory.appendingPathComponent(baseName).appendingPathExtension("mov")
+        for stem in allStems {
+            let sidecarURL = stem.appendingPathExtension("json")
+            let videoURL = stem.appendingPathExtension("mov")
 
-            guard jsonBaseNames.contains(baseName) else {
+            guard jsonStems.contains(stem) else {
                 issues.append(.missingSidecar(video: videoURL))
                 continue
             }
-            guard movBaseNames.contains(baseName) else {
+            guard movStems.contains(stem) else {
                 issues.append(.missingVideo(sidecar: sidecarURL))
                 continue
             }
