@@ -1,7 +1,7 @@
 # W2-02 · Metric scale from plate diameter
 
 **Wave:** 2 — Track A: Plate Tracking
-**Status:** open
+**Status:** done
 **Depends on:** W2-01
 **Spec:** §8, §6
 
