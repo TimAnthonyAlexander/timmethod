@@ -35,9 +35,9 @@ struct EvalCommand: AsyncParsableCommand {
 
     @Option(
         name: .long,
-        help: "Directory of fixture clips (.mov + sidecar ground-truth JSON)."
+        help: "Directory of fixture clips (.mov + sidecar ground-truth JSON). Required unless --jitter-report."
     )
-    var fixtures: String
+    var fixtures: String?
 
     @Option(
         name: .long,
@@ -47,9 +47,9 @@ struct EvalCommand: AsyncParsableCommand {
 
     @Option(
         name: .long,
-        help: "Path to write the JSON report to. Trace dumps for wrong-count clips are written under <report's directory>/traces/."
+        help: "Path to write the JSON report to. Trace dumps for wrong-count clips are written under <report's directory>/traces/. Required unless --jitter-report."
     )
-    var report: String
+    var report: String?
 
     @Option(
         name: .long,
@@ -69,7 +69,65 @@ struct EvalCommand: AsyncParsableCommand {
     )
     var realtime: Bool = false
 
+    @Flag(
+        name: .long,
+        help: """
+            Measure static-subject signal noise (SPEC §4.1 / §7.2; W3-01) instead of running the eval harness. \
+            Requires --signal. Per-backend comparison is explicitly deferred: no PoseProvider implementation \
+            exists yet (Wave 5) and no real static-subject footage exists yet (W1-06 is still open) — this mode \
+            measures whatever --signal points it at, and nothing is fabricated about how that generalises to a \
+            real pose backend.
+            """
+    )
+    var jitterReport: Bool = false
+
+    @Option(
+        name: .long,
+        help: """
+            --jitter-report only: path to a JSON file of static-hold samples, an array of \
+            {"t": seconds, "x": metres[, "confidence": 0...1]} objects, oldest first.
+            """
+    )
+    var signal: String?
+
+    @Option(
+        name: .long,
+        help: """
+            --jitter-report only: a known rep peak-to-valley amplitude in metres to compare the measured jitter \
+            against, so the report can print the ratio that actually decides whether smoothing is worth its lag \
+            cost. Omit to get the raw jitter numbers without a ratio — this is never guessed.
+            """
+    )
+    var repAmplitudeReferenceMeters: Double?
+
+    mutating func validate() throws {
+        if jitterReport {
+            guard signal != nil else {
+                throw ValidationError("--jitter-report requires --signal <path>.")
+            }
+            if let repAmplitudeReferenceMeters, repAmplitudeReferenceMeters <= 0 {
+                throw ValidationError("--rep-amplitude-reference-meters must be positive.")
+            }
+        } else {
+            guard fixtures != nil else {
+                throw ValidationError("Missing expected argument '--fixtures <fixtures>'")
+            }
+            guard report != nil else {
+                throw ValidationError("Missing expected argument '--report <report>'")
+            }
+        }
+    }
+
     func run() async throws {
+        if jitterReport {
+            try runJitterReport()
+            return
+        }
+
+        // `validate()` guarantees these are non-nil whenever `jitterReport`
+        // is false; the guard is defensive, not expected to fire.
+        guard let fixtures, let report else { throw ExitCode.failure }
+
         let fixturesURL = URL(fileURLWithPath: fixtures)
 
         let loadResult: FixtureLoadResult
@@ -149,5 +207,42 @@ struct EvalCommand: AsyncParsableCommand {
         encoder.dateEncodingStrategy = .iso8601
         let data = try encoder.encode(evalReport)
         try data.write(to: url, options: .atomic)
+    }
+
+    /// `--jitter-report` (SPEC §4.1 / §7.2; W3-01 item 4). All the actual
+    /// jitter arithmetic lives in `TimMethodCore.JitterAnalysis` — see
+    /// `JitterReport.swift` for the read-a-file / format-for-terminal
+    /// plumbing this delegates to, and its doc comment for the scope note
+    /// this mode is required to be honest about (no pose backend, no real
+    /// static-hold footage yet).
+    private func runJitterReport() throws {
+        // `validate()` guarantees `signal` is non-nil here.
+        guard let signalPath = signal else { throw ExitCode.failure }
+
+        let cliReport: JitterCLIReport
+        do {
+            cliReport = try JitterReportRunner.run(
+                signalPath: signalPath,
+                repAmplitudeReferenceMetres: repAmplitudeReferenceMeters
+            )
+        } catch let error as JitterReportError {
+            FileHandle.standardError.write(Data("\(error.description)\n".utf8))
+            throw ExitCode.failure
+        }
+
+        print(JitterReportRunner.render(cliReport))
+
+        // Reuses `--report` when it's supplied (it's optional in this mode,
+        // unlike eval mode) so a jitter run leaves the same kind of durable
+        // JSON artifact an eval run does, without requiring it.
+        if let report {
+            let reportURL = URL(fileURLWithPath: report)
+            try FileManager.default.createDirectory(at: reportURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+            encoder.dateEncodingStrategy = .iso8601
+            let data = try encoder.encode(cliReport)
+            try data.write(to: reportURL, options: .atomic)
+        }
     }
 }

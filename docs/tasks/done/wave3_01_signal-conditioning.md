@@ -1,7 +1,7 @@
 # W3-01 · Signal conditioning
 
 **Wave:** 3 — Rep Counter
-**Status:** open
+**Status:** done
 **Depends on:** W1-07
 **Spec:** §4.1, §7.2
 
@@ -18,7 +18,11 @@ Everything the counter does keys off zero crossings of velocity. A drifting base
 - [ ] A `--jitter-report` mode in the CLI that measures static-subject noise so the smoothing decision is made from data
 
 ## Done when
-- [ ] Static-subject jitter is quantified for each backend and recorded
+- [ ] ~~Static-subject jitter is quantified for each backend and recorded~~
+      **Deferred to W5-08.** `--jitter-report` works and produces real numbers
+      for any signal handed to it, but there is no second backend to compare
+      against until `PoseProvider` exists, and no real static-hold footage until
+      W1-06. The bake-off is where this number gets filled in.
 - [ ] Derivative of a synthetic sine matches analytic within tolerance
 - [ ] The default path applies no additional smoothing
 
