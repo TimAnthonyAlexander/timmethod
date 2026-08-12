@@ -1,7 +1,7 @@
 # W2-04 · Motion axis fit and 1D projection
 
 **Wave:** 2 — Track A: Plate Tracking
-**Status:** open
+**Status:** done
 **Depends on:** W2-03, W1-07
 **Spec:** §6, §8
 
