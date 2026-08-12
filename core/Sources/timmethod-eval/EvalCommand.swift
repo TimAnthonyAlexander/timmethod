@@ -150,7 +150,6 @@ struct EvalCommand: AsyncParsableCommand {
         selected.sort { $0.videoURL.lastPathComponent < $1.videoURL.lastPathComponent }
 
         let pacing: ReplayPacing = realtime ? .realtime : .asFastAsPossible
-        let counter = StubRepCounter()
 
         let reportURL = URL(fileURLWithPath: report)
         let tracesDirectory = reportURL.deletingLastPathComponent().appendingPathComponent("traces")
@@ -162,14 +161,19 @@ struct EvalCommand: AsyncParsableCommand {
             if verbose { print("timmethod-eval: running \(name)...") }
 
             do {
-                let signal = try await FrameReplay.buildPlaceholderSignal(for: loaded.videoURL, pacing: pacing)
-                let prediction = counter.count(signal: signal)
-                let evaluation = ClipEvaluator.evaluate(name: name, fixture: loaded.fixture, prediction: prediction)
-                evaluations.append(evaluation)
+                switch try await FrameReplay.run(fixture: loaded.fixture, videoURL: loaded.videoURL, pacing: pacing) {
+                case .refused(let reason):
+                    skipped.append("\(name): \(reason)")
+                    if verbose { print("timmethod-eval:   refused — \(reason)") }
 
-                if !evaluation.isCountCorrect {
-                    try TraceDumper.dump(evaluation: evaluation, signal: signal, to: tracesDirectory)
-                    if verbose { print("timmethod-eval:   wrong count (true \(evaluation.trueCount), predicted \(evaluation.predictedCount)) — trace written") }
+                case .scored(let frameResult):
+                    let evaluation = ClipEvaluator.evaluate(name: name, fixture: loaded.fixture, prediction: frameResult.result)
+                    evaluations.append(evaluation)
+
+                    if !evaluation.isCountCorrect {
+                        try TraceDumper.dump(evaluation: evaluation, frameResult: frameResult, to: tracesDirectory)
+                        if verbose { print("timmethod-eval:   wrong count (true \(evaluation.trueCount), predicted \(evaluation.predictedCount)) — trace written") }
+                    }
                 }
             } catch {
                 skipped.append("\(name): replay failed — \(error)")

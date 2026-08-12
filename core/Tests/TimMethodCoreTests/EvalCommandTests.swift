@@ -93,7 +93,9 @@ struct EvalCommandEndToEndTests {
         return url
     }
 
-    @Test("running against the three real fixtures produces both outputs, a trace per wrong clip, and a failing gate")
+    @Test(
+        "running against the three real fixtures scores the plate-configured clip, honestly refuses the other two, and fails the gate"
+    )
     func endToEndAgainstRealFixtures() async throws {
         let outDirectory = try makeTempDirectory()
         defer { try? FileManager.default.removeItem(at: outDirectory) }
@@ -104,11 +106,16 @@ struct EvalCommandEndToEndTests {
             "--report", reportURL.path,
         ])
 
-        // The stub counter (SPEC §15's Wave-1 placeholder) predicts zero
-        // reps for every clip, since Wave 1 has no tracker to feed it a
-        // real signal — so every one of the three committed fixtures
-        // (true counts 5, 8, 6) is a wrong-count clip, and the gate is
-        // expected to fail. `run()` signals that by throwing `ExitCode`.
+        // W3-07: the real Track A pipeline now runs. `barbell_back_squat`
+        // has a configured plate diameter, so it's scored — but the clip
+        // itself is a solid-colour placeholder with no plate in it, so the
+        // tracker never measures anything and the honest prediction is 0
+        // reps against a true count of 5, a wrong-count clip. `dumbbell_row`
+        // (no `plateDiameterMm`) and `bodyweight_pushup` (`.bodyweight`,
+        // never has one) have no plate diameter to run Track A against at
+        // all — refused, not scored (this task's Do item 3), so they land
+        // in `skippedFixtures`, not `clips`. One wrong-count scored clip is
+        // still enough to fail the regression gate.
         await #expect(throws: ExitCode.self) {
             try await command.run()
         }
@@ -118,24 +125,26 @@ struct EvalCommandEndToEndTests {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         let report = try decoder.decode(EvalReport.self, from: data)
-        #expect(report.clips.count == 3)
-        #expect(report.skippedFixtures.isEmpty)
+        #expect(report.clips.count == 1)
+        #expect(report.clips[0].exerciseId == "back_squat")
+        #expect(report.clips[0].predictedCount == 0)
+        #expect(report.clips[0].isCountCorrect == false)
+        #expect(report.skippedFixtures.count == 2)
+        #expect(report.skippedFixtures.contains { $0.contains("dumbbell_row") })
+        #expect(report.skippedFixtures.contains { $0.contains("pushup") })
         #expect(report.gate.passed == false)
-        for clip in report.clips {
-            #expect(clip.predictedCount == 0)
-            #expect(clip.isCountCorrect == false)
-        }
 
-        // A trace file exists for every wrong-count clip (all three, here).
+        // A trace file exists only for the one clip that was actually
+        // scored — a refused fixture never reaches `TraceDumper` at all.
         let tracesDirectory = outDirectory.appendingPathComponent("traces")
         let traceNames = Set(
             try FileManager.default.contentsOfDirectory(atPath: tracesDirectory.path)
         )
-        #expect(traceNames == ["barbell_back_squat.json", "bodyweight_pushup.json", "dumbbell_row.json"])
+        #expect(traceNames == ["barbell_back_squat.json"])
     }
 
-    @Test("--filter narrows to matching fixtures only, and a right-count clip leaves no trace behind")
-    func filterAndNoTraceForCorrectClip() async throws {
+    @Test("--filter narrows to matching fixtures only, and a fixture with no plate diameter is refused, not scored")
+    func filterAndRefusalForNoConfiguredDiameter() async throws {
         let outDirectory = try makeTempDirectory()
         defer { try? FileManager.default.removeItem(at: outDirectory) }
         let reportURL = outDirectory.appendingPathComponent("report.json")
@@ -144,6 +153,38 @@ struct EvalCommandEndToEndTests {
             "--fixtures", Self.repoFixturesDirectory.path,
             "--report", reportURL.path,
             "--filter", "pushup",
+        ])
+        // `pushup` is `.bodyweight` — no plate diameter, ever — so it's
+        // refused rather than scored. With zero scored clips the gate has
+        // nothing to check and passes vacuously (`EvalTests`' own "gate
+        // skips rather than passes when a metric has no data" covers the
+        // gate's own logic for this); `run()` therefore does not throw.
+        try await command.run()
+
+        let data = try Data(contentsOf: reportURL)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let report = try decoder.decode(EvalReport.self, from: data)
+        #expect(report.clips.isEmpty)
+        #expect(report.skippedFixtures.count == 1)
+        #expect(report.skippedFixtures[0].contains("pushup"))
+        #expect(report.gate.passed == true)
+
+        // No trace for a fixture that was never scored at all.
+        let tracesDirectory = outDirectory.appendingPathComponent("traces")
+        #expect(!FileManager.default.fileExists(atPath: tracesDirectory.path))
+    }
+
+    @Test("--filter narrowing to the plate-configured clip still scores and traces it")
+    func filterToScoredClipStillTraces() async throws {
+        let outDirectory = try makeTempDirectory()
+        defer { try? FileManager.default.removeItem(at: outDirectory) }
+        let reportURL = outDirectory.appendingPathComponent("report.json")
+
+        let command = try EvalCommand.parse([
+            "--fixtures", Self.repoFixturesDirectory.path,
+            "--report", reportURL.path,
+            "--filter", "squat",
         ])
         await #expect(throws: ExitCode.self) {
             try await command.run()
@@ -154,16 +195,12 @@ struct EvalCommandEndToEndTests {
         decoder.dateDecodingStrategy = .iso8601
         let report = try decoder.decode(EvalReport.self, from: data)
         #expect(report.clips.count == 1)
-        #expect(report.clips[0].exerciseId == "pushup")
+        #expect(report.clips[0].exerciseId == "back_squat")
+        #expect(report.skippedFixtures.isEmpty)
 
-        // Still a wrong-count clip (stub predicts 0, true is 8) so a trace
-        // is written for it. A dedicated no-trace-for-a-correct-clip
-        // assertion lives in `TraceDumperTests`, which builds a
-        // right-count `ClipEvaluation` directly rather than depending on
-        // the stub counter ever being right.
         let tracesDirectory = outDirectory.appendingPathComponent("traces")
         let traceNames = try FileManager.default.contentsOfDirectory(atPath: tracesDirectory.path)
-        #expect(traceNames == ["bodyweight_pushup.json"])
+        #expect(traceNames == ["barbell_back_squat.json"])
     }
 
     @Test("a nonexistent fixtures directory fails fast with a non-zero exit, not a crash")
