@@ -49,7 +49,7 @@ against real clips.
 | W1-03 | [ReplayFrameSource](open/wave1_03_replay-source.md) — `AVAssetReader` into the production path | §5, §15 |
 | W1-04 | [Fixture format and loader](open/wave1_04_fixture-format.md) — clip plus ground-truth sidecar | §15 |
 | W1-05 | [Evaluation CLI](open/wave1_05_eval-cli.md) — MAE, off-by-one, trace dumps, regression gate | §15.2 |
-| W1-06 | [Acquire and convert datasets](open/wave1_06_datasets.md) — **FLEX request has lead time, do it first** | §15.1 |
+| W1-06 | [Build the fixture set](open/wave1_06_datasets.md) — no request forms; self-recorded barbell is primary | §15.1 |
 | W1-07 | [RepSignal type](open/wave1_07_repsignal.md) — the one abstraction both trackers produce | §6 |
 
 ### Wave 2 — Track A: Plate Tracking · 6 tasks

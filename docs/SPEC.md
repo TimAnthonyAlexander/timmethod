@@ -971,20 +971,36 @@ fixtures through Apple Vision and MediaPipe and read the numbers.
 
 ### 15.1 Fixture sources
 
-Given the constraint of not recording en masse:
+**Decision: no academic request forms, no data-use agreements.** FLEX (20
+weight-loaded exercises, 38 subjects, 5 camera angles) and Fitness-AQA were the
+original primary and secondary sources. Both are gated behind an approval form
+and both are non-commercial, so both were always going to be torn out before any
+release (open question 9). They are dropped now instead of later.
 
 | Source | Content | Licence | Use |
 |---|---|---|---|
-| **FLEX** | 20 weight-loaded exercises, **evenly split barbell/dumbbell**, 38 subjects, 5 camera angles, 7,500+ multi-view recordings, RGB + 3D pose ⟨C2⟩ | CC BY-NC-SA 4.0, academic request form | **Primary.** Closest match to v1 scope that exists |
-| **MM-Fit** | 10 exercises, 5 dumbbell; multimodal with 2D/3D pose and rep labels ⟨C2⟩ | Open download, no commercial restriction stated | Secondary, dumbbell coverage |
-| **Fitness-AQA** | Back squat, overhead press, barbell row, form-error labelled ⟨C2⟩ | Non-commercial, gated | Form-flag validation |
+| **Your clips** | 10 v1 exercises × 3 camera angles × fresh/fatigued, one working set each | Yours outright | **Primary.** The loaded barbell set |
+| **MM-Fit** | 10 exercises, 5 dumbbell; multimodal with 2D/3D pose and rep labels ⟨C2⟩ | Open download, no form | Dumbbell coverage |
 | **InfiniteRep** | 1,000 synthetic videos, 10 bodyweight exercises, varied avatars and lighting ⟨A23⟩ | CC BY 4.0, commercially clean | Bodyweight track, lighting sweeps |
-| **RepCount-A** | 1,041 videos, 19,280 rep annotations ⟨A23⟩ | No explicit licence found — verify before any commercial use | Counting stress-test |
-| **Your clips** | Incremental, added over time | — | The failure modes synthetic data can't produce |
+| **RepCount-A** | 1,041 videos, 19,280 rep annotations ⟨A23⟩ | No explicit licence found — verify before any commercial use | Counting stress-test only |
+| **QUVA Repetition** | 100 videos, per-repetition annotations, mostly non-gym | Research use | Counting stress-test only |
 
-Note the licence asymmetry honestly: FLEX and Fitness-AQA are non-commercial. That
-is the correct licence for a personal build and becomes a blocker the day this
-ships. Record replacements before that day, not on it.
+Self-recording is not a downgrade here. FLEX's advantage was 38 subjects across
+5 angles; its disadvantage was that none of them is the user, in their gym,
+under their lighting, with their rack. For a single-user app, one subject filmed
+across the angles that matter beats 38 filmed elsewhere. Roughly one session of
+filming plus one of labelling covers the loaded track.
+
+Ground truth without hardware. Rep boundaries are labelled with a keyboard
+toggle against a frame-stepped video — published annotation studies put full
+boundary labelling at 1–5× real time by keyboard versus 7–18× with a
+bounding-box tool. Use `requestVideoFrameCallback`'s `mediaTime`, never
+`currentTime`, which is not frame-snapped and drifts up to a full frame period.
+Reference velocity comes from filming a subset at 240 fps and hand-digitising
+the two concentric endpoints: at ±5 mm of endpoint precision against a 450 mm
+plate over a typical 0.5 m / 0.6 s concentric, that is about ±0.01 m/s, five
+times tighter than the ≤ 0.05 m/s target in §15.2, and it needs no linear
+position transducer.
 
 The clips only you can provide, when you get to it: baggy hoodie (no runtime fix
 for clothing exists in the literature ⟨A24⟩), your actual gym lighting, your rack
@@ -1145,9 +1161,11 @@ Tracked honestly rather than buried.
    exactly the cases vision fails at — occluded joints, fast reps, off-axis
    camera — and the few-shot rep-counting results that transfer best to §9.3 are
    IMU-based ⟨C5⟩. The single-wrist limitation is real. Revisit after M7.
-9. **Licence swap before any distribution.** FLEX and Fitness-AQA are
-   non-commercial. If this ever ships, the fixture set needs rebuilding from
-   InfiniteRep, MM-Fit and your own clips.
+9. ~~**Licence swap before any distribution.**~~ **Closed** (2026-08-12). FLEX
+   and Fitness-AQA are dropped rather than requested, so the fixture set is
+   built from own clips, MM-Fit and InfiniteRep from the start. RepCount-A and
+   QUVA stay as stress-tests only and are flagged, never load-bearing. Nothing
+   has to be swapped out later.
 
 ---
 
