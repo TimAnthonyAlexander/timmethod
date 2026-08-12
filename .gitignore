@@ -20,5 +20,14 @@ xcuserdata/
 # Evaluation harness output
 core/out/
 
+# Fixture videos: large, and some source datasets are licence-restricted
+# (see fixtures/README.md). Sidecar JSON and the README stay tracked — they
+# are the ground truth. The three tiny hand-made example clips are kept as
+# explicit exceptions so a fresh clone has something real to load.
+fixtures/**/*.mov
+!fixtures/barbell_back_squat.mov
+!fixtures/dumbbell_row.mov
+!fixtures/bodyweight_pushup.mov
+
 # Claude Code
 .claude/

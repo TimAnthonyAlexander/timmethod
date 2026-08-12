@@ -1,7 +1,7 @@
 # W1-04 · Fixture format and loader
 
 **Wave:** 1 — Foundations & Harness
-**Status:** open
+**Status:** done
 **Depends on:** W1-01
 **Spec:** §15
 

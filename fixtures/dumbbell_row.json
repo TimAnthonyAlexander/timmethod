@@ -1,0 +1,14 @@
+{
+  "exerciseId": "dumbbell_row",
+  "equipment": "dumbbell",
+  "plateDiameterMm": null,
+  "trueRepCount": 6,
+  "truePartialCount": 0,
+  "cameraPosition": "oblique30",
+  "lightingNote": "mixed fluorescent and window daylight, mild shadow on the working side",
+  "sourceDataset": "own",
+  "licence": "ownFootage",
+  "perRepTimestamps": null,
+  "referenceMeanConcentricVelocity": [0.62, 0.60, 0.58, 0.55, 0.52, 0.47],
+  "trueSetBoundaries": null
+}

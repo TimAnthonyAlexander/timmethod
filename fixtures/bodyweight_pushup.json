@@ -1,0 +1,14 @@
+{
+  "exerciseId": "pushup",
+  "equipment": "bodyweight",
+  "plateDiameterMm": null,
+  "trueRepCount": 8,
+  "truePartialCount": 0,
+  "cameraPosition": "oblique45",
+  "lightingNote": "dim room lamp only, low light",
+  "sourceDataset": "own",
+  "licence": "ownFootage",
+  "perRepTimestamps": null,
+  "referenceMeanConcentricVelocity": null,
+  "trueSetBoundaries": null
+}
