@@ -1,7 +1,7 @@
 # W2-01 · Plate detector core
 
 **Wave:** 2 — Track A: Plate Tracking
-**Status:** open
+**Status:** done
 **Depends on:** W1-03
 **Spec:** §8
 
