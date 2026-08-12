@@ -1,7 +1,7 @@
 # W3-03 · Amplitude gate
 
 **Wave:** 3 — Rep Counter
-**Status:** open
+**Status:** done
 **Depends on:** W3-02
 **Spec:** §7.2
 
